@@ -5,10 +5,13 @@ For information about getting started with MongoLab and acquiring your MongoLab 
 
 ### Callbacks
 
-All methods in this class that interact with the database take an optional callback parameter. The callback takes three parameters: *err, response, data*. The *err* parameter will be null if the request was successful, or contain an *err* object with a `statuscode` and `body` if an error was encountered during the request. The *resp* object is the [response table](https://electricimp.com/docs/api/httprequest/sendasync/) returned from the request, and *data* will contain the decoded data from the request.
+All methods in this class that interact with the database take an optional callback parameter. The callback takes three parameters: `err`, `response`, `data`:
+
+- The `err` parameter will be `null` if the request was successful, or contain an *err* object with a `statuscode` and `message` if an error was encountered during the request.
+- The `resp` parameter is the [response table](https://electricimp.com/docs/api/httprequest/sendasync/) returned from the request.
+- The `data` parameter will contain the decoded data from the request.
 
 ```squirrel
-// Asyncronous request (recommended method)
 mongo.getDatabases(function(err, resp, databases) {
     if (err != null) {
         server.error(err.body);
@@ -21,22 +24,26 @@ mongo.getDatabases(function(err, resp, databases) {
 });
 ```
 
-## constructor(apiKey, [db])
-The create a new MongoDB object you will need your API key, you can also supply an optional database parameter to connect to. If no database is selected, all methods that require a collection will invoke the callback with an error until a database is selected with **.use()**.
+### Active Database
 
-```
+All methods in the MongoLab class (with the exception of `use` and `getDatabases`) require an active database. The active database can be set using the second parameter of the constructor (suggested method), or by invoking with `use` method with the desired database as the parameter.
+
+## constructor(apiKey, [db])
+To create a new MongoDB object you will need your API key. You may also supply an optional database parameter to set the active database. If no database is selected, all methods that require a database will invoke the callback with an error until a database is selected with the `use` method.
+
+```squirrel
 db <- MongoLab("<-- API_KEY -->", "<-- DATABASE_NAME -->");
 ```
 
 ## db.use(db)
-The `use` method can be used to change the active database (i.e. what database we're running our queries against). This method should not be required in the majority of applications:
+The `use` method can be used to change the active database (i.e. what database we're running our queries against). This method should not be required in the majority of applications as the database should be set in the constructor.
 
-```
+```squirrel
 db.use("someOtherDatabase");
 ```
 
 ## db.getDatabases([callback])
-The `getDatabases` method lists all of the databases attached to the account associated with the API key:
+The `getDatabases` method lists all of the databases attached to the account associated with the API key.
 
 ```squirrel
 db.getDatabases(function(err, resp, databases) {
@@ -52,7 +59,7 @@ db.getDatabases(function(err, resp, databases) {
 ```
 
 ## db.getCollections([callback])
-The `getCollection` method lists all collections (tables) in the active database. If no database is selected, this method will invoke the callback with an error.
+The `getCollections` method lists all collections (tables) in the active database.
 
 ```squirrel
 db.getCollections(function(err, resp, collections) {
@@ -68,9 +75,11 @@ db.getCollections(function(err, resp, collections) {
 ```
 
 ## db.find(collection, query, [callback])
-The `find` method invokes a query against the specified collection in the active database. If no database is selected, this method will invoke the callback with an error.
+The `find` method invokes a query against the specified collection.
 
-If an empty table is passed to the *query* parameter, find will return all records in the collection. Information about building query strings can be found in [MongoLab's documentation](http://docs.mongodb.org/v2.6/reference/operator/query/).
+If an empty table is passed to the *query* parameter, find will return all records in the collection, otherwise, `find` will execute the specified query, and return the results.
+
+*Information about building queries can be found in [MongoLab's documentation](http://docs.mongodb.org/v2.6/reference/operator/query/).*
 
 ```squirrel
 // Return all users
@@ -111,19 +120,23 @@ device.on("data", function(data) {
         temp = data.temp
     };
 
-  db.insert("sensor_readings", record, function(err, resp, record) {
-      if (err != null) {
-          server.log(err.message);
-          return;
-      }
+    db.insert("sensor_readings", record, function(err, resp, record) {
+        if (err != null) {
+            server.log(err.message);
+            return;
+        }
 
-      server.log("Created record with id: " + record._id["$oid"]);
-  });
+        server.log("Created record with id: " + record._id["$oid"]);
+    });
 });
 ```
 
-## db.update(collection, multi, q, record, [callback])
-The `update` method updates records in the specified collection collection matching the specified query. If the *multi* parameter is set to `false`, MongoLab will only update a single record, if the *multi* parameter is set to `true`, MongoLab will update all matching records. The *record* parameter can either be an object or contain an [Update Action](http://docs.mongodb.org/v2.6/reference/method/db.collection.update/#update-method-examples). If the *multi* flag is set to `true`, *record* MUST contain an update action.
+## db.update(collection, multi, q, updateModfier, [callback])
+The `update` method updates a collection's records that match the specified query.
+
+If the *multi* parameter is set to `false`, MongoLab will only update a single record, if the *multi* parameter is set to `true`, MongoLab will update all matching records. The *updateModifier* parameter can either be an object (in which case update will replace the record with the specified object) or contain an [Update Action](http://docs.mongodb.org/v2.6/reference/method/db.collection.update/#update-method-examples) (in which case update will take the specified action on all matching records).
+
+NOTE: If the *multi* flag is set to `true`, updateModifer *must* contain an update action.
 
 ```squirrel
 // Update a single record:
