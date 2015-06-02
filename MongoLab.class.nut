@@ -62,7 +62,7 @@ class MongoLab {
 
     // Updates all documents in the specified collection
     // that match the query parameter
-    function update(collection, multi, q, record, cb = null) {
+    function update(collection, multi, q, updateModifier, cb = null) {
         if (_noDbCheck(cb)) {
             return;
         }
@@ -72,7 +72,7 @@ class MongoLab {
         reqUrl += "&m=" + multi;
 
         local headers = { "Content-Type": "application/json" };
-        return _processRequest(http.put(reqUrl, headers, http.jsonencode(record)), cb);
+        return _processRequest(http.put(reqUrl, headers, http.jsonencode(updateModifier)), cb);
     }
 
     // Removes a document with the specified id from a collection
