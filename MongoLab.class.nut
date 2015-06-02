@@ -16,7 +16,7 @@ class MongoLab {
     }
 
     // Sets the current database.
-    function useDatabase(db) {
+    function use(db) {
         _db = db;
     }
 
