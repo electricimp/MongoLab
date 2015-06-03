@@ -14,7 +14,7 @@ All methods in this class that interact with the database take an optional callb
 ```squirrel
 mongo.getDatabases(function(err, resp, databases) {
     if (err != null) {
-        server.error(err.body);
+        server.error(err.message);
         return;
     }
 
@@ -48,7 +48,7 @@ The `getDatabases` method lists all of the databases attached to the account ass
 ```squirrel
 db.getDatabases(function(err, resp, databases) {
     if (err != null) {
-        server.error(err.body);
+        server.error(err.message);
         return;
     }
 
@@ -64,7 +64,7 @@ The `getCollections` method lists all collections (tables) in the active databas
 ```squirrel
 db.getCollections(function(err, resp, collections) {
     if (err != null) {
-        server.error(err.body);
+        server.error(err.message);
         return;
     }
 
@@ -85,7 +85,7 @@ If an empty table is passed to the *query* parameter, find will return all recor
 // Return all users
 db.find("users", {}, function(err, resp, users) {
     if (err != null) {
-        server.error(err.body);
+        server.error(err.message);
         return;
     }
 
@@ -100,7 +100,7 @@ db.find("users", {}, function(err, resp, users) {
 // don't have a verified key (i.e. unverified users)
 db.find("users", { "verified": { "$exists": false } }, function(err, resp, users) {
     if (err != null) {
-        server.error(err.body);
+        server.error(err.message);
         return;
     }
 
