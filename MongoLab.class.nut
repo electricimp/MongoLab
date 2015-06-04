@@ -46,7 +46,9 @@ class MongoLab {
         }
 
         local reqUrl = API_BASE + "databases/" + _db + "/collections/" + collection + "?apiKey=" + _apiKey;
-        if (q != null) reqUrl += "&" + _formatQuery(q);
+        if (q != null) {
+            reqUrl += "&" + _formatQuery(q);
+        }
         return _processRequest(http.get(reqUrl), cb);
     }
 
@@ -69,7 +71,9 @@ class MongoLab {
         }
 
         local reqUrl = API_BASE + "databases/" + _db + "/collections/" + collection + "?apiKey=" + _apiKey;
-        if (q != null) reqUrl += "&" + _formatQuery(q);
+        if (q != null) {
+            reqUrl += "&" + _formatQuery(q);
+        }
         reqUrl += "&m=" + multi;
 
         local headers = { "Content-Type": "application/json" };
