@@ -115,8 +115,7 @@ class MongoLab {
             local result = null;
             if (resp.statuscode != 200) {
                 err = resp.body;
-            }
-            else {
+            } else {
                 result = http.jsondecode(resp.body);
             }
 
