@@ -3,9 +3,10 @@
 // http://opensource.org/licenses/MIT
 
 class MongoLab {
-    static version = [1, 0, 0];
+    static version = [2, 0, 0];
 
     static API_BASE = "https://api.mongolab.com/api/1/";
+    static NO_DATABASE_ERROR = "No database selected";
 
     _apiKey = null;
     _db = null;
@@ -45,7 +46,9 @@ class MongoLab {
         }
 
         local reqUrl = API_BASE + "databases/" + _db + "/collections/" + collection + "?apiKey=" + _apiKey;
-        if (q != null) reqUrl += "&" + _formatQuery(q);
+        if (q != null) {
+            reqUrl += "&" + _formatQuery(q);
+        }
         return _processRequest(http.get(reqUrl), cb);
     }
 
@@ -68,7 +71,9 @@ class MongoLab {
         }
 
         local reqUrl = API_BASE + "databases/" + _db + "/collections/" + collection + "?apiKey=" + _apiKey;
-        if (q != null) reqUrl += "&" + _formatQuery(q);
+        if (q != null) {
+            reqUrl += "&" + _formatQuery(q);
+        }
         reqUrl += "&m=" + multi;
 
         local headers = { "Content-Type": "application/json" };
@@ -87,16 +92,10 @@ class MongoLab {
     }
 
     //-------------------- PRIVATE METHODS --------------------//
-
-    // Builds an error object
-    function _buildErr(message, statuscode = -1) {
-        return { statuscode = statuscode, message = message };
-    }
-
     // Checks if a DB is set, and invokes the cb if not
     function _noDbCheck(cb) {
         if (_db == null) {
-            local err = _buildErr("ERROR: No database selected");
+            local err = NO_DATABASE_ERROR;
             imp.wakeup(0, function() { cb(err, null, null); });
             return true;
         }
@@ -114,8 +113,11 @@ class MongoLab {
         return function(resp) {
             local err = null;
             local result = null;
-            if (resp.statuscode != 200) err = _buildErr(resp.body, resp.statuscode);
-            else result = http.jsondecode(resp.body);
+            if (resp.statuscode != 200) {
+                err = resp.body;
+            } else {
+                result = http.jsondecode(resp.body);
+            }
 
             if (cb != null) {
                 imp.wakeup(0, function() { cb(err, resp, result); });

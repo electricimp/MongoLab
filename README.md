@@ -7,14 +7,14 @@ For information about getting started with MongoLab and acquiring your MongoLab 
 
 All methods in this class that interact with the database take an optional callback parameter. The callback takes three parameters: `err`, `response`, `data`:
 
-- The `err` parameter will be `null` if the request was successful, or contain an *err* object with a `statuscode` and `message` if an error was encountered during the request.
+- The `err` parameter will be `null` in a successful request, or contain a string describing the error.
 - The `resp` parameter is the [response table](https://electricimp.com/docs/api/httprequest/sendasync/) returned from the request.
 - The `data` parameter will contain the decoded data from the request.
 
 ```squirrel
 mongo.getDatabases(function(err, resp, databases) {
     if (err != null) {
-        server.error(err.message);
+        server.error(err);
         return;
     }
 
@@ -48,7 +48,7 @@ The `getDatabases` method lists all of the databases attached to the account ass
 ```squirrel
 db.getDatabases(function(err, resp, databases) {
     if (err != null) {
-        server.error(err.message);
+        server.error(err);
         return;
     }
 
@@ -64,7 +64,7 @@ The `getCollections` method lists all collections (tables) in the active databas
 ```squirrel
 db.getCollections(function(err, resp, collections) {
     if (err != null) {
-        server.error(err.message);
+        server.error(err);
         return;
     }
 
@@ -85,7 +85,7 @@ If an empty table is passed to the *query* parameter, find will return all recor
 // Return all users
 db.find("users", {}, function(err, resp, users) {
     if (err != null) {
-        server.error(err.message);
+        server.error(err);
         return;
     }
 
@@ -100,7 +100,7 @@ db.find("users", {}, function(err, resp, users) {
 // don't have a verified key (i.e. unverified users)
 db.find("users", { "verified": { "$exists": false } }, function(err, resp, users) {
     if (err != null) {
-        server.error(err.message);
+        server.error(err);
         return;
     }
 
@@ -122,7 +122,7 @@ device.on("data", function(data) {
 
     db.insert("sensor_readings", record, function(err, resp, record) {
         if (err != null) {
-            server.log(err.message);
+            server.log(err);
             return;
         }
 
@@ -152,7 +152,7 @@ local newRecord = {
 
 db.update("users", false, query, newRecord, function(err, resp, data) {
     if (err != null) {
-        server.log(err.message);
+        server.log(err);
         return;
     }
 
@@ -178,7 +178,7 @@ local updateAction = {
 
 db.update("users", true, query, updateAction, function(err, resp, data) {
     if (err != null) {
-        server.log(err.message);
+        server.log(err);
         return;
     }
 
@@ -198,7 +198,7 @@ The `remove` method removes the specified record from the specified collection.
 // remove record with _id: { $oid: "54d505afe4b05f6282260adf" }
 db.remove("users", "54d505afe4b05f6282260adf", function(err, resp, result) {
     if (err != null) {
-        server.log(err.message);
+        server.log(err);
         return;
     }
 
