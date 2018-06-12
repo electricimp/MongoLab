@@ -1,4 +1,5 @@
 # MongoLab
+
 The MongoLab is a wrapper class for the [MongoLab](mongolab.com) REST API. MongoLab is a hosted MongoDB as a service, and allows you a variety of options in terms of size, redundancy, etc.
 
 For information about getting started with MongoLab and acquiring your MongoLab API key, see the [REST API for MongoLab](http://docs.mongolab.com/restapi/) documentation.
@@ -8,19 +9,19 @@ For information about getting started with MongoLab and acquiring your MongoLab 
 All methods in this class that interact with the database take an optional callback parameter. The callback takes three parameters: `err`, `response`, `data`:
 
 - The `err` parameter will be `null` in a successful request, or contain a string describing the error.
-- The `resp` parameter is the [response table](https://electricimp.com/docs/api/httprequest/sendasync/) returned from the request.
+- The `resp` parameter is the [response table](https://developer.electricimp.com/api/httprequest/sendasync/) returned from the request.
 - The `data` parameter will contain the decoded data from the request.
 
 ```squirrel
 mongo.getDatabases(function(err, resp, databases) {
-    if (err != null) {
-        server.error(err);
-        return;
-    }
+  if (err != null) {
+    server.error(err);
+    return;
+  }
 
-    foreach(database in databases) {
-        server.log(database);
-    }
+  foreach(database in databases) {
+    server.log(database);
+  }
 });
 ```
 
@@ -47,14 +48,14 @@ The `getDatabases` method lists all of the databases attached to the account ass
 
 ```squirrel
 db.getDatabases(function(err, resp, databases) {
-    if (err != null) {
-        server.error(err);
-        return;
-    }
+  if (err != null) {
+    server.error(err);
+    return;
+  }
 
-    foreach(database in databases) {
-        server.log(database);
-    }
+  foreach(database in databases) {
+    server.log(database);
+  }
 });
 ```
 
@@ -63,14 +64,14 @@ The `getCollections` method lists all collections (tables) in the active databas
 
 ```squirrel
 db.getCollections(function(err, resp, collections) {
-    if (err != null) {
-        server.error(err);
-        return;
-    }
+  if (err != null) {
+    server.error(err);
+    return;
+  }
 
-    foreach(collection in collections) {
-      server.log(collection);
-    }
+  foreach(collection in collections) {
+    server.log(collection);
+  }
 });
 ```
 
@@ -84,14 +85,14 @@ If an empty table is passed to the *query* parameter, find will return all recor
 ```squirrel
 // Return all users
 db.find("users", {}, function(err, resp, users) {
-    if (err != null) {
-        server.error(err);
-        return;
-    }
+  if (err != null) {
+    server.error(err);
+    return;
+  }
 
-    foreach(user in users) {
-      server.log(http.jsonencode(user));
-    }
+  foreach(user in users) {
+    server.log(http.jsonencode(user));
+  }
 });
 ```
 
@@ -99,14 +100,14 @@ db.find("users", {}, function(err, resp, users) {
 // Return all records in the users collection that
 // don't have a verified key (i.e. unverified users)
 db.find("users", { "verified": { "$exists": false } }, function(err, resp, users) {
-    if (err != null) {
-        server.error(err);
-        return;
-    }
+  if (err != null) {
+    server.error(err);
+    return;
+  }
 
-    foreach(user in users) {
-      server.log(user._id["$oid"] + ": " + user.username);
-    }
+  foreach(user in users) {
+    server.log(user._id["$oid"] + ": " + user.username);
+  }
 });
 ```
 
@@ -115,19 +116,19 @@ The `insert` method inserts a new record into the specified collection.
 
 ```squirrel
 device.on("data", function(data) {
-    local record = {
-        ts = data.ts,
-        temp = data.temp
-    };
+  local record = {
+    ts = data.ts,
+    temp = data.temp
+  };
 
-    db.insert("sensor_readings", record, function(err, resp, record) {
-        if (err != null) {
-            server.log(err);
-            return;
-        }
+  db.insert("sensor_readings", record, function(err, resp, record) {
+    if (err != null) {
+      server.log(err);
+      return;
+    }
 
-        server.log("Created record with id: " + record._id["$oid"]);
-    });
+    server.log("Created record with id: " + record._id["$oid"]);
+  });
 });
 ```
 
@@ -142,52 +143,52 @@ NOTE: If the *multi* flag is set to `true`, updateModifer *must* contain an upda
 // Update a single record:
 
 local query = {
-    "_id": { "$oid": "54d505afe4b05f6282260adf" }
+  "_id": { "$oid": "54d505afe4b05f6282260adf" }
 };
 
 local newRecord = {
-    "username": "newUserName",
-    "verified": false
+  "username": "newUserName",
+  "verified": false
 };
 
 db.update("users", false, query, newRecord, function(err, resp, data) {
-    if (err != null) {
-        server.log(err);
-        return;
-    }
+  if (err != null) {
+    server.log(err);
+    return;
+  }
 
-    if (data.n == 0) {
-        server.log("No matching records found!");
-        return;
-    }
+  if (data.n == 0) {
+    server.log("No matching records found!");
+    return;
+  }
 
-    server.log("Success!");
+  server.log("Success!");
 });
 ```
 
 ```squirrel
 // Find all records that are missing the verified flag, and add it
 local query = {
-    "verified": false
+  "verified": false
 };
 
 // Add the verified flag, and set it to false
 local updateAction = {
-    "$set": { "verified": true }
+  "$set": { "verified": true }
 };
 
 db.update("users", true, query, updateAction, function(err, resp, data) {
-    if (err != null) {
-        server.log(err);
-        return;
-    }
+  if (err != null) {
+    server.log(err);
+    return;
+  }
 
-    if (data.n == 0) {
-        server.log("No matching records found!");
-        return;
-    }
+  if (data.n == 0) {
+    server.log("No matching records found!");
+    return;
+  }
 
-    server.log("Updated " + data.n + " records!");
+  server.log("Updated " + data.n + " records!");
 });
 ```
 
@@ -197,12 +198,12 @@ The `remove` method removes the specified record from the specified collection.
 ```squirrel
 // remove record with _id: { $oid: "54d505afe4b05f6282260adf" }
 db.remove("users", "54d505afe4b05f6282260adf", function(err, resp, result) {
-    if (err != null) {
-        server.log(err);
-        return;
-    }
+  if (err != null) {
+    server.log(err);
+    return;
+  }
 
-    server.log("Success!");
+  server.log("Success!");
 });
 ```
 
